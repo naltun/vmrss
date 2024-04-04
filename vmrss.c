@@ -15,10 +15,10 @@ static float get_vmrss(int pid) {
     // Initialize procname to check for an update later
     procname[0] = '\0';
 
-	if (!fp) {
-	    fprintf(stderr, "Total: 0 MB");
-	    exit(EXIT_FAILURE);
-	}
+    if (!fp) {
+        fprintf(stderr, "Total: 0 MB");
+        exit(EXIT_FAILURE);
+    }
 
     // Iterate over the lines of /proc/PID/status...
     while (fgets(line, sizeof(line), fp)) {
@@ -28,7 +28,9 @@ static float get_vmrss(int pid) {
         // ...and the VmRSS (Resident Set Size) value
         else if (strncmp(line, "VmRSS:", 6) == 0)
             sscanf(line, "%*s %d", &kb);
-	}
+        else
+            continue;
+    }
 
     fclose(fp);
 
