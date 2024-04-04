@@ -1,9 +1,10 @@
 # vmrss
 
-C implementation of ThePrimeagen's [https://github.com/theprimeagen/vmrss/](vmrss). Print a process'
-Resident Set Size (VmRSS).
+Print a process' Resident Set Size (VmRSS) 🖥️🔬✨
 
-TODO: print child processes VmRSS info
+C implementation of ThePrimeagen's [https://github.com/theprimeagen/vmrss/](vmrss)
+
+TODO: print child processes' VmRSS info
 
 ## Building
 
@@ -16,6 +17,9 @@ make debug
 
 NOTE: `make` defaults to using `tcc (Tiny C Compiler)` if it is installed. Otherwise it uses
 `gcc (GNU Compiler Collection)`.
+
+NOTE: This requires a Unix machine. It has only been tested on GNU/Linux (GNU userspace with the
+Linux kernel).
 
 ## License
 
