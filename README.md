@@ -18,6 +18,8 @@ Ensure `make` is installed and simply run `make`. All supported commands:
 make [all]  # Defaults to tcc (Tiny C Compiler), otherwise uses gcc
 make clean
 make debug  # Defaults to gcc for compatibility with gdb
+make install[-system]  # /usr/local/bin/
+make install-local     # $HOME/.local/bin/
 ```
 
 NOTE: This requires a Unix machine and has only been tested on GNU/Linux (GNU userspace with the

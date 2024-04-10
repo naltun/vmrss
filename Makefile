@@ -14,3 +14,11 @@ clean:
 
 debug:
 	gcc $(CFLAGS) -g -o $(BIN) $(SRC)
+
+install: install-system
+
+install-local:
+	cp $(BIN) $(HOME)/.local/bin/
+
+install-system:
+	cp $(BIN) /usr/local/bin/
