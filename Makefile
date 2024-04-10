@@ -1,6 +1,6 @@
 BIN    := build/vmrss
 CC     := $(shell which tcc || echo gcc)
-CFLAGS := -Wall -Werrors
+CFLAGS := -Wall -Werror
 SRC    := vmrss.c
 
 all: $(BIN)
@@ -13,4 +13,4 @@ clean:
 	rm --recursive $(BIN)
 
 debug:
-	$(CC) $(CFLAGS) -g -o $(BIN) $(SRC)
+	gcc $(CFLAGS) -g -o $(BIN) $(SRC)
