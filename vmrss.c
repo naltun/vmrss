@@ -18,13 +18,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int *find_child_processes(int ppid, int *size) {
-    char statpath[269], line[50];
-    DIR *dir;
-    FILE *fp;
-    int *child_pids, capacity , counter, ppid_tmp;
-    struct dirent *entry;
+// Global variables
+char line[50], procname[50], statpath[50];
+DIR *dir;
+FILE *fp;
+float megabytes;
+int *child_pids, capacity , counter, kilobytes, ppid_tmp;
+struct dirent *entry;
 
+static int *find_child_processes(int ppid, int *size) {
     child_pids = NULL;
     capacity = 10;
     counter = 0;
@@ -79,17 +81,12 @@ static int *find_child_processes(int ppid, int *size) {
 }
 
 static float get_parent_vmrss(int pid) {
-    char statpath[269], line[50], procname[50];
-    FILE *fp;
-    float mb;
-    int kb;
-
     // Set statpath to /proc/PID/status
     sprintf(statpath, "/proc/%d/status", pid);
     fp = fopen(statpath, "r");
 
     if (!fp) {
-        fprintf(stderr, "Total: 0 MB");
+        fprintf(stderr, "Total: 0 MB\n");
         exit(EXIT_FAILURE);
     }
 
@@ -103,7 +100,7 @@ static float get_parent_vmrss(int pid) {
             sscanf(line, "%*s %s", procname);
         // ...and the VmRSS (Resident Set Size) value
         } else if (strncmp(line, "VmRSS:", 6) == 0) {
-            sscanf(line, "%*s %d", &kb);
+            sscanf(line, "%*s %d", &kilobytes);
         } else {
             continue;
         }
@@ -111,24 +108,24 @@ static float get_parent_vmrss(int pid) {
 
     fclose(fp);
 
-    // Check if procname has been updated and if kb has a positive value
-    if (procname[0] != '\0' && kb > 0) {
+    // Check if procname has been updated and if kilobytes has a positive value
+    if (procname[0] != '\0' && kilobytes > 0) {
         // 1 kB = 10 ** -3
-        mb = (float)kb * 0.001;
-        printf("%s(%d) %.2f MB\n", procname, pid, mb);
+        megabytes = (float)kilobytes * 0.001;
+        printf("%s(%d) %.2f MB\n", procname, pid, megabytes);
     } else {
         fprintf(stderr, "Total: 0 MB\n");
         exit(EXIT_FAILURE);
     }
 
-    return mb;
+    return megabytes;
 }
 
 static float print_vmrss(int pid) {
     char statpath[269], line[50], procname[50];
     FILE *fp;
     float total;
-    int *child_pids, kb, size_child_pids;
+    int *child_pids, kilobytes, size_child_pids;
 
     // Get PID VmRSS
     total = get_parent_vmrss(pid);
@@ -148,14 +145,14 @@ static float print_vmrss(int pid) {
                 if (strncmp(line, "Name:", 5) == 0) {
                     sscanf(line, "%*s %s", procname);
                 } else if (strncmp(line, "VmRSS:", 6) == 0) {
-                    sscanf(line, "%*s %d", &kb);
-                } else if (procname[0] != '\0' && kb > 0) {
-                    printf("  %s(%d): %.2f MB\n", procname, child_pids[i], (float)kb * 0.001);
-                    total += (float)kb * 0.001;
+                    sscanf(line, "%*s %d", &kilobytes);
+                } else if (procname[0] != '\0' && kilobytes > 0) {
+                    printf("  %s(%d): %.2f MB\n", procname, child_pids[i], (float)kilobytes * 0.001);
+                    total += (float)kilobytes * 0.001;
 
                     // Clean up
                     memset(&procname[0], 0, sizeof(procname));
-                    kb = 0;
+                    kilobytes = 0;
 
                     break;
                 }
